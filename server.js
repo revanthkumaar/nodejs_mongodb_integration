@@ -12,25 +12,43 @@ serverApp.use(bodyParser.urlencoded({ extended: false }));
 serverApp.set('view enginer', 'ejs')
 serverApp.use(express.static('public'))
 
-//\\-----ROUTES------//\\
+
 
 //MONGO CONNECT
 MongoClient.connect(connectionString, (err,client) => {
-    //ERROR HANDLING
-    if(err){
-        return console.error(err)
-    }
-    //RETRIEVE THE DB
-    const usersDB = client.db('users-data')
-    const usersCollection = usersDB.collection('users')
+  //ERROR HANDLING
+  if (err) {
+    return console.error(err);
+  }
+  //RETRIEVE THE DB
+  const usersDB = client.db("users-data");
+  const usersCollection = usersDB.collection("users");
 
-    //CREATE user information
-        serverApp.post('/createUser',(req,res) => {
-            //apply promise on this
-            usersCollection.insertOne(req.body)
-            .then(result => {res.redirect('/')})
-            .catch(error => console.error(error))
-          
-        })
+  //\\-----ROUTES------//\\
+
+  //READ OPERATION
+  serverApp.get('/', (req,res) => {
+      usersDB.collection('users').find().toArray()
+      .then(users => {
+            res.render('index.ejs',{users:users})
+      })
+      .catch(error => {console.error(error)})
+  })
+
+  //CREATE user information
+  serverApp.post("/createUser", (req, res) => {
+    //apply promise on this
+    usersCollection
+      .insertOne(req.body)
+      .then((result) => {
+        res.redirect("/");
+      })
+      .catch((error) => console.error(error));
+  });
+
+  //UPDATE 
+  
+
+
 })
 serverApp.listen(5000);
