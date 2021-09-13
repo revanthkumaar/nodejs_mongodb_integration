@@ -55,7 +55,7 @@ MongoClient.connect(connectionString, (err, client) => {
     usersCollection
       .findOneAndUpdate(
         {
-          name: "kumar",
+          name: req.body.name,
         },
         {
           $set: {
