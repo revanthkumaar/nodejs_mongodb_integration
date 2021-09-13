@@ -1,21 +1,20 @@
 //DEPENDENCY IMPORTS
-const express  = require('express')
-const {MongoClient} = require('mongodb')
+const express = require("express");
+const { MongoClient } = require("mongodb");
 const serverApp = express();
-const connectionString = 'mongodb+srv://revanth:revanth199419941994@cluster0.ahsix.mongodb.net/myFirstDatabase?retryWrites=true&w=majority'
+const connectionString =
+  "mongodb+srv://revanth:revanth199419941994@cluster0.ahsix.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const bodyParser = require("body-parser");
-require('./dotenv')
+require("./dotenv");
 
 //MIDDLE WARE CONFIGS
 serverApp.use(bodyParser.json());
 serverApp.use(bodyParser.urlencoded({ extended: false }));
-serverApp.set('view enginer', 'ejs')
-serverApp.use(express.static('public'))
-
-
+serverApp.set("view enginer", "ejs");
+serverApp.use(express.static("public"));
 
 //MONGO CONNECT
-MongoClient.connect(connectionString, (err,client) => {
+MongoClient.connect(connectionString, (err, client) => {
   //ERROR HANDLING
   if (err) {
     return console.error(err);
@@ -27,13 +26,18 @@ MongoClient.connect(connectionString, (err,client) => {
   //\\-----ROUTES------//\\
 
   //READ OPERATION
-  serverApp.get('/', (req,res) => {
-      usersDB.collection('users').find().toArray()
-      .then(users => {
-            res.render('index.ejs',{users:users})
+  serverApp.get("/", (req, res) => {
+    usersDB
+      .collection("users")
+      .find()
+      .toArray()
+      .then((users) => {
+        res.render("index.ejs", { users: users });
       })
-      .catch(error => {console.error(error)})
-  })
+      .catch((error) => {
+        console.error(error);
+      });
+  });
 
   //CREATE user information
   serverApp.post("/createUser", (req, res) => {
@@ -46,9 +50,27 @@ MongoClient.connect(connectionString, (err,client) => {
       .catch((error) => console.error(error));
   });
 
-  //UPDATE 
-  
-
-
-})
+  //UPDATE
+  serverApp.put("/updateEmployee", (req, res) => {
+    usersCollection
+      .findOneAndUpdate(
+        {
+          name: "kumar",
+        },
+        {
+          $set: {
+            name: "revanth",
+            id: "12345",
+          },
+        },
+        {
+          upsert: true,
+        }
+      )
+      .then((result) => {
+        res.send("updated the info");
+      })
+      .catch((error) => console.error(error));
+  });
+});
 serverApp.listen(5000);
